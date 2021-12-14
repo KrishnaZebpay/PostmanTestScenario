@@ -1,0 +1,2404 @@
+{
+	"info": {
+		"_postman_id": "02bdab9c-a216-4a50-880b-e663047a9f8c",
+		"name": "Under Maintainance",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"if(jsonData.statusDescription === \"Too many OTP requests, Please try after sometime.\")",
+							"{",
+							"    pm.test( \"statusDescription: Too many OTP requests, Please try after sometime.\");",
+							"}",
+							"else if( pm.response.to.have.status(200)){",
+							" //   pm.test(\"User logged in Successfully\");",
+							"    pm.environment.set(\"verification_code_sell\", jsonData.data.verification_code);",
+							"}",
+							"else{",
+							"    pm.test(\"Not able to get Verification code\")",
+							"}",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "{{client_id}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"country_code\": \"{{country_code}}\",\n    \"mobile_number\": \"{{mobilenumber_sell}}\",\n    \"client_id\": \"{{client_id_sell}}\",\n    \"client_secret\": \"{{client_secret_sell}}\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify OTP",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"if( pm.response.to.have.status(200)){",
+							"  // pm.test(\"User logged in Successfully\");",
+							"    pm.environment.set(\"verification_code_sell\", jsonData.data.verification_code);",
+							"}",
+							"else{",
+							"    pm.test(\"Not able to retrieve OTP\")",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "{{client_id_sell}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"otp\": 840429,\n    \"verification_code\": \"{{verification_code_sell}}\",\n    \"client_id\": \"{{client_id_sell}}\",\n    \"client_secret\": \"{{client_secret_sell}}\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/verifyotp",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"verifyotp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify PIN",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"if( pm.response.to.have.status(200)){",
+							"    pm.test(\"User logged in Successfully\");",
+							"    pm.environment.set(\"access_token_sell\", jsonData.data.access_token);",
+							"",
+							"}",
+							"else{",
+							"    pm.test(\"User not able to logged in\")",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "{{client_id}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"grant_type\": \"user_credentials\",\n    \"pin\": \"{{pin}}\",\n    \"daily_trade_limit\": \"{{daily_trade_limit}}\",\n    \"daily_withdraw_limit\": \"{{daily_withdraw_limit}}\",\n    \"total_trade_limit\": \"{{total_trade_limit}}\",\n    \"total_withdraw_limit\": \"{{total_withdraw_limit}}\",\n    \"verification_code\": \"{{verification_code_sell}}\",\n    \"scope\": \"{{AllowedScopes}}\",\n    \"client_id\": \"{{client_id_sell}}\",\n    \"client_secret\": \"{{client_secret_sell}}\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/verifypin",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"verifypin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Range",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"if(jsonData.statusCode ===77){",
+							"",
+							"    pm.test(\"Get Range\", function () {",
+							"        pm.response.to.have.status(200);",
+							"",
+							"        //get the string i.e. \"Rate should be in the range of 10.000000 - 100.000000\",",
+							"        var str = jsonData.statusDescription;",
+							"            ",
+							"        //get the range i.e. 10.000000 - 100.000000",
+							"        var range = str.substring(str.lastIndexOf(\"f\") + 2);",
+							"        ",
+							"        //get the max range after hyphen i.e. 100.000000 ",
+							"        var split = range.split(\"-\");",
+							"        ",
+							"        var min_range =    split[0].replace(/,/g, '');",
+							"      //  console.log(min_range);",
+							"        //remove comma from range if it is present",
+							"        pm.environment.set(\"Min_range\",split[0].replace(/,/g, ''));",
+							"        pm.environment.set(\"Max_range\",split[1].replace(/,/g, ''));",
+							"",
+							"        var min = pm.environment.get(\"Min_range\");",
+							"        var max = pm.environment.get(\"Max_range\");",
+							"",
+							"        //FOR ETH-USDT",
+							"       // pm.environment.set(\"final_bid_price\", _.random(min,max).toFixed(2));",
+							"",
+							"        //for BTC-INR",
+							"        //pm.environment.set(\"final_bid_price\", _.random(min,max));",
+							"",
+							"        //for BTC-USDT",
+							"        pm.environment.set(\"final_bid_price\", _.random(min,max).toFixed(2));",
+							"",
+							"      //    pm.environment.set(\"final_bid_price\", _.random(100000,200000));  ",
+							"    //    pm.environment.set(\"bid_price\", _.random(0.01,200).toFixed(4))",
+							"        pm.environment.set(\"bid_price\", _.random(0.004,0.0050).toFixed(4))",
+							"       pm.test(\"Range for pair \"+pm.environment.get(\"pair\")+\" : \"+jsonData.statusDescription);",
+							"    });",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//pm.environment.set(\"pair\", \"BTC-USDT\");",
+							"",
+							"pm.environment.set(\"pair\", \"BTC-BUSD\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "{{client_id_sell}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token_sell}}"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"trade_pair\": \"{{pair}}\",\n    \"side\": \"Bid\",\n    \"size\": 0.1,\n    \"price\": 0.1,\n    \"tradeType\": 1\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Wallet Balance before placing any order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"var i=jsonData.data[0].balance;",
+							"for (i=0; i<jsonData.data.length;i++){",
+							" if(jsonData.statusCode === 200){",
+							"pm.environment.set(\"Initial Balance for pair \"+ jsonData.data[i].currency+\" : \",jsonData.data[i].balance);",
+							"pm.test(\"Initial Balance for pair \"+ jsonData.data[i].currency+\" : \"+jsonData.data[i].balance);",
+							"}",
+							"}",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//pm.environment.set(\"pair\", \"BUSD-USDT\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Zebpay-Subscription-Key",
+						"value": "{{SubscriptionKey}}"
+					},
+					{
+						"key": "client_id",
+						"value": "{{client_id}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "ApiSignature",
+						"value": "{{ApiSignature}}"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token_sell}}"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/orders/{{pair}}/balance",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						"{{pair}}",
+						"balance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ASK : Place Sell Order",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//   const postRequest = {",
+							"//   url: pm.environment.get(\"baseUrl\")+'/market/'+pm.environment.get(\"pair\")+'/book?group=singapore&converted=1',",
+							"//   method: 'GET',",
+							"//   header: {",
+							"//     'Content-Type': 'application/json',",
+							"//     //'Authorization':'Bearer '+pm.environment.get(\"access_token\")",
+							"//   },",
+							"//   body: {",
+							"//   }",
+							"// };",
+							"// pm.sendRequest(postRequest, (error, response) => {",
+							"//   //console.log(error ? error : response.json());",
+							"//    var jsonData = response.json();",
+							"//   console.log(jsonData.bids[0]);",
+							"//     pm.environment.set(\"bid_price\",jsonData.bids[0].price * 100);",
+							"//   //  pm.environment.set(\"ask_qty\",jsonData.asks[0].amount  + 10 );",
+							"//     pm.environment.set(\"bid_qty\",10 )",
+							"//    // var p_ask_qty = pm.environment.get(\"ask_qty\") + 100;",
+							"//    // pm.environment.set(\"pending order : \", +p_ask_qty);",
+							"",
+							"// });"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"if(jsonData.statusDescription == \"Success\" && jsonData.statusCode ===200){",
+							"",
+							"    pm.test(\"ASK : Successfully Order Placed\", function () {",
+							"        pm.response.to.have.status(200);",
+							"        pm.environment.set(\"askorder_id\", jsonData.data.id);",
+							"        pm.environment.set(\"ask_qty\",jsonData.data.size);",
+							"        pm.environment.set(\"ask_price\",jsonData.data.price);",
+							"        pm.test(\"Sell Order ID :\"+pm.environment.get(\"askorder_id\"));",
+							"        pm.test(\"Quantity Entered :\"+pm.environment.get(\"ask_qty\"));",
+							"        pm.test(\"Price : \"+pm.environment.get(\"ask_price\"));",
+							"",
+							"         if (jsonData.data.status === \"complete\") {",
+							"            pm.test(\"Order has been executed..\")",
+							"        }",
+							"        else if(jsonData.data.status === \"pending\") {",
+							"            pm.test(\"order is in pending state\")",
+							"        }",
+							"    });",
+							"}else{",
+							"    console.log(jsonData.statusDescription);",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "{{client_id}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token_sell}}"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"trade_pair\": \"{{pair}}\",\n     \"side\": \"ask\",\n     \"size\": \"{{bid_price}}\",\n     \"price\": \"{{final_bid_price}}\",\n    \"tradeType\": 1\n }\n\n\n"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders/trade",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						"trade"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ASK : check order is filled or not",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"//pm.globals.set(\"order_id\", jsonData.data.id);",
+							"",
+							"console.log(jsonData.statusDescription);",
+							"",
+							"if ((pm.environment.get(\"askorder_id\")) === jsonData.data.orderDetail.id)",
+							"//if(5098122 === jsonData.data.orderDetail.id)",
+							"{",
+							"    if (jsonData.data.orderDetail.size === jsonData.data.orderDetail.openQty) {",
+							"        pm.test(\"Order is fully in open state i.e. all quantity are in pending state\")",
+							"        pm.test(\"Actual Quantiy : \" + jsonData.data.orderDetail.size);",
+							"        pm.test(\"Open Quantiy : \" + jsonData.data.orderDetail.openQty)",
+							"    }",
+							"    else if (jsonData.data.orderDetail.size != jsonData.data.orderDetail.openQty) {",
+							"        if (jsonData.data.orderDetail.size === jsonData.data.orderDetail.executedQty) {",
+							"            pm.test(\"Order is fully executed\")",
+							"            pm.test(\"Actual Quantiy : \" + jsonData.data.orderDetail.size);",
+							"            pm.test(\"Open Quantiy : \" + jsonData.data.orderDetail.executedQty)",
+							"        }",
+							"        else {",
+							"            pm.test(\"Order is partially executed or cancelled\")",
+							"            pm.test(\"Actual Quantiy : \" + jsonData.data.orderDetail.size);",
+							"            pm.test(\"Open Quantiy : \" + jsonData.data.orderDetail.openQty)",
+							"        }",
+							"    }",
+							"    //   var f_price = jsonData.data.fills[1].price;",
+							"    // var f_size = jsonData.data.fills[1].size;",
+							"",
+							"    // var fees = ((f_price * f_size) / 100) * 0.15;",
+							"    // var fess_calculated = jsonData.data.fills[1].fees",
+							"",
+							"    // if(fees = fess_calculated)",
+							"    // {",
+							"    //       pm.test(\"Fees is properly calculated\")",
+							"    // }",
+							"    //else{",
+							"    //    pm.test(\"There is issue in fees\");",
+							"    //}",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "{{client_id_sell}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token_sell}}"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders/{{askorder_id}}/fills",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						"{{askorder_id}}",
+						"fills"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ASK : Market Order",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//   const postRequest = {",
+							"//   url: pm.environment.get(\"baseUrl\")+'/market/'+pm.environment.get(\"pair\")+'/book?group=singapore&converted=1',",
+							"//   method: 'GET',",
+							"//   header: {",
+							"//     'Content-Type': 'application/json',",
+							"//     //'Authorization':'Bearer '+pm.environment.get(\"access_token\")",
+							"//   },",
+							"//   body: {",
+							"//   }",
+							"// };",
+							"// pm.sendRequest(postRequest, (error, response) => {",
+							"//   //console.log(error ? error : response.json());",
+							"//    var jsonData = response.json();",
+							"//   console.log(jsonData.bids[0]);",
+							"//     pm.environment.set(\"bid_price\",jsonData.bids[0].price * 100);",
+							"//   //  pm.environment.set(\"ask_qty\",jsonData.asks[0].amount  + 10 );",
+							"//     pm.environment.set(\"bid_qty\",10 )",
+							"//    // var p_ask_qty = pm.environment.get(\"ask_qty\") + 100;",
+							"//    // pm.environment.set(\"pending order : \", +p_ask_qty);",
+							"",
+							"// });"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"if(jsonData.statusDescription == \"Success\" && jsonData.statusCode ===200){",
+							"",
+							"    pm.test(\"ASK : Successfully Order Placed\", function () {",
+							"        pm.response.to.have.status(200);",
+							"        pm.environment.set(\"askorder_id\", jsonData.data.id);",
+							"        pm.environment.set(\"ask_qty\",jsonData.data.size);",
+							"        pm.environment.set(\"ask_price\",jsonData.data.price);",
+							"        pm.test(\"Sell Order ID :\"+pm.environment.get(\"askorder_id\"));",
+							"        pm.test(\"Quantity Entered :\"+pm.environment.get(\"ask_qty\"));",
+							"        pm.test(\"Price : \"+pm.environment.get(\"ask_price\"));",
+							"",
+							"         if (jsonData.data.status === \"complete\") {",
+							"            pm.test(\"Order has been executed..\")",
+							"        }",
+							"        else if(jsonData.data.status === \"pending\") {",
+							"            pm.test(\"order is in pending state\")",
+							"        }",
+							"    });",
+							"}else{",
+							"   pm.test(jsonData.statusDescription);",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "{{client_id}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token_sell}}"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"trade_pair\": \"{{pair}}\",\n     \"side\": \"ask\",\n     \"size\": \"{{bid_price}}\",\n    \"tradeType\": 2\n }\n\n\n"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders/trade",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						"trade"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ASK : check order is filled for MO",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"//pm.globals.set(\"order_id\", jsonData.data.id);",
+							"",
+							"console.log(jsonData.statusDescription);",
+							"",
+							"if ((pm.environment.get(\"askorder_id\")) === jsonData.data.orderDetail.id)",
+							"//if(5098122 === jsonData.data.orderDetail.id)",
+							"{",
+							"    if (jsonData.data.orderDetail.size === jsonData.data.orderDetail.openQty) {",
+							"        pm.test(\"Order is fully in open state i.e. all quantity are in pending state\")",
+							"        pm.test(\"Actual Quantiy : \" + jsonData.data.orderDetail.size);",
+							"        pm.test(\"Open Quantiy : \" + jsonData.data.orderDetail.openQty)",
+							"    }",
+							"    else if (jsonData.data.orderDetail.size != jsonData.data.orderDetail.openQty) {",
+							"        if (jsonData.data.orderDetail.size === jsonData.data.orderDetail.executedQty) {",
+							"            pm.test(\"Order is fully executed\")",
+							"            pm.test(\"Actual Quantiy : \" + jsonData.data.orderDetail.size);",
+							"            pm.test(\"Open Quantiy : \" + jsonData.data.orderDetail.executedQty)",
+							"        }",
+							"        else {",
+							"            pm.test(\"Order is partially executed or cancelled\")",
+							"            pm.test(\"Actual Quantiy : \" + jsonData.data.orderDetail.size);",
+							"            pm.test(\"Open Quantiy : \" + jsonData.data.orderDetail.openQty)",
+							"        }",
+							"    }",
+							"    //   var f_price = jsonData.data.fills[1].price;",
+							"    // var f_size = jsonData.data.fills[1].size;",
+							"",
+							"    // var fees = ((f_price * f_size) / 100) * 0.15;",
+							"    // var fess_calculated = jsonData.data.fills[1].fees",
+							"",
+							"    // if(fees = fess_calculated)",
+							"    // {",
+							"    //       pm.test(\"Fees is properly calculated\")",
+							"    // }",
+							"    //else{",
+							"    //    pm.test(\"There is issue in fees\");",
+							"    //}",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "{{client_id_sell}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token_sell}}"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders/{{askorder_id}}/fills",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						"{{askorder_id}}",
+						"fills"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ASK : Get Pending Orders from User 1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//pm.environment.set(\"pair\", \"BUSD-USDT\");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"if (pm.response.to.have.status(200)) {",
+							"    if (jsonData.statusCode == \"3013\") {",
+							"        pm.test(\"BID : There are no pending order for :\" + pm.environment.get(\"pair\"));",
+							"        //   pm.environment.set(\"Order status \",jsonData.statusDescription);",
+							"        pm.environment.set(\"statusCode\", jsonData.statusCode)",
+							"    }",
+							"    else if (jsonData.statusDescription == \"No matching orders found\") {",
+							"        pm.test(\"No pending orders present : \",jsonData.statusDescription)",
+							"    }",
+							"    else {",
+							"        pm.test(\"BID : Found Pending order for :\" + pm.environment.get(\"pair\"));",
+							"        pm.test(\"Price : \" + pm.environment.get(\"bid_price\"));",
+							"        pm.test(\"Quantity Entered : \" + pm.environment.get(\"final_bid_price\"));",
+							"        pm.test(\"filled_size : \" + jsonData.data[0].filled_size);",
+							"        pm.test(\"Pending Quantity : \" + jsonData.data[0].open_size);",
+							"",
+							"    }",
+							"",
+							"",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_sell}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/orders?trade_pair={{pair}}&status=pending&page=1&limit=1000",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders"
+					],
+					"query": [
+						{
+							"key": "trade_pair",
+							"value": "{{pair}}"
+						},
+						{
+							"key": "status",
+							"value": "pending"
+						},
+						{
+							"key": "orderid",
+							"value": "0",
+							"disabled": true
+						},
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "1000"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"if(jsonData.statusDescription === \"Too many OTP requests, Please try after sometime.\")",
+							"{",
+							"    pm.test( \"statusDescription: Too many OTP requests, Please try after sometime.\");",
+							"}",
+							"else if( pm.response.to.have.status(200)){",
+							" //   pm.test(\"User logged in Successfully\");",
+							"    pm.environment.set(\"verification_code_buy\", jsonData.data.verification_code);",
+							"}",
+							"else{",
+							"    pm.test(\"Not able to get Verification code\")",
+							"}",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//pm.environment.set(\"pair\", \"BTC-INR\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "{{client_id_buy}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"country_code\": \"{{country_code}}\",\n    \"mobile_number\": \"{{mobilenumber_buy}}\",\n    \"client_id\": \"{{client_id_buy}}\",\n    \"client_secret\": \"{{client_secret_buy}}\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify OTP",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"if( pm.response.to.have.status(200)){",
+							"  // pm.test(\"User logged in Successfully\");",
+							"    pm.environment.set(\"verification_code_buy\", jsonData.data.verification_code);",
+							"}",
+							"else{",
+							"    pm.test(\"Not able to retrieve OTP\")",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"disabled": true
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"otp\": 840429,\n    \"verification_code\": \"{{verification_code_buy}}\",\n    \"client_id\": \"{{client_id_buy}}\",\n    \"client_secret\": \"{{client_secret_buy}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/verifyotp",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"verifyotp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify PIN",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"if( pm.response.to.have.status(200)){",
+							"    pm.test(\"User logged in Successfully\");",
+							"    pm.environment.set(\"access_token_buy\", jsonData.data.access_token);",
+							"",
+							"}",
+							"else{",
+							"    pm.test(\"User not able to logged in\")",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "{{client_id}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"grant_type\": \"user_credentials\",\n    \"pin\": \"{{pin}}\",\n    \"daily_trade_limit\": \"{{daily_trade_limit}}\",\n    \"daily_withdraw_limit\": \"{{daily_withdraw_limit}}\",\n    \"total_trade_limit\": \"{{total_trade_limit}}\",\n    \"total_withdraw_limit\": \"{{total_withdraw_limit}}\",\n    \"verification_code\": \"{{verification_code_buy}}\",\n    \"scope\": \"{{AllowedScopes}}\",\n    \"client_id\": \"{{client_id_buy}}\",\n    \"client_secret\": \"{{client_secret_buy}}\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/verifypin",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"verifypin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BID : Place Buy Order",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//   const postRequest = {",
+							"//   url: pm.environment.get(\"baseUrl\")+'/market/'+pm.environment.get(\"pair\")+'/book?group=singapore&converted=1',",
+							"//   method: 'GET',",
+							"//   header: {",
+							"//     'Content-Type': 'application/json',",
+							"//     //'Authorization':'Bearer '+pm.environment.get(\"access_token\")",
+							"//   },",
+							"//   body: {",
+							"//   }",
+							"// };",
+							"// pm.sendRequest(postRequest, (error, response) => {",
+							"//   //console.log(error ? error : response.json());",
+							"//    var jsonData = response.json();",
+							"//  // console.log(jsonData.asks[0]);",
+							"  ",
+							"//     var bid_price = jsonData.asks[0].price;",
+							"//     var bid_qty = jsonData.asks[0].amount;",
+							"//     var final_bid_price= (bid_price * bid_qty) + 5",
+							"",
+							"//     if(final_bid_price >= pm.environment.get(\"Min_range\") && final_bid_price <= pm.environment.get(\"Max_range\"))",
+							"//     {",
+							"//     pm.environment.set(\"bid_price\",jsonData.asks[0].price);",
+							"//     pm.environment.set(\"final_bid_price\",final_bid_price);",
+							"//     }",
+							"// });",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"if (jsonData.statusDescription === \"Success\" && jsonData.statusCode === 200) {",
+							"",
+							"    pm.test(\"BID : Successfully Order Placed\", function () {",
+							"        pm.response.to.have.status(200);",
+							"        pm.environment.set(\"bid_id\", jsonData.data.id);",
+							"        pm.test(\"Buy Order ID :\" + pm.environment.get(\"bid_id\"))",
+							"        pm.test(\"Price : \" + pm.environment.get(\"final_bid_price\"));",
+							"        pm.test(\"Quantity Entered : \" + pm.environment.get(\"bid_price\"));",
+							"",
+							"        if (jsonData.data.status === \"complete\") {",
+							"            pm.test(\"Order has been executed..\")",
+							"        }",
+							"        else if(jsonData.data.status === \"pending\") {",
+							"            pm.test(\"order is in pending state\")",
+							"        }",
+							"    });",
+							"}",
+							"else if (jsonData.statusDescription === \"Order Rejected. Order could have resulted in self trade.\") {",
+							"    pm.test(\"Order Rejected. Order could have resulted in self trade.\");",
+							"}",
+							"else if (jsonData.statusDescription === \"Not enough funds. Errors: Not enough funds.\") {",
+							"    pm.test(\"Not enough funds. Errors: Not enough funds.\")",
+							"}",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "{{client_id}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token_buy}}"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"trade_pair\": \"{{pair}}\",\n    \"side\": \"Bid\",\n    \"size\": \"{{bid_price}}\",\n    \"price\": \"{{final_bid_price}}\",\n    \"tradeType\": 1\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders/trade",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						"trade"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BIDTrade : Order fills",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"//pm.globals.set(\"order_id\", jsonData.data.id);",
+							"",
+							"console.log(jsonData.statusDescription);",
+							"",
+							"if((pm.environment.get(\"bid_id\")) === jsonData.data.orderDetail.id)",
+							"//if(5098122 === jsonData.data.orderDetail.id)",
+							"{",
+							"    if(jsonData.data.orderDetail.size === jsonData.data.orderDetail.openQty)",
+							"    {",
+							"        pm.test(\"Order is fully in open state i.e. all quantity are in pending state\")",
+							"        pm.test(\"Actual Quantiy : \"+jsonData.data.orderDetail.size);",
+							"        pm.test(\"Open Quantiy : \"+jsonData.data.orderDetail.openQty)",
+							"    }",
+							"    else if(jsonData.data.orderDetail.size != jsonData.data.orderDetail.openQty)",
+							"    {",
+							"        if (jsonData.data.orderDetail.size === jsonData.data.orderDetail.executedQty) {",
+							"            pm.test(\"Order is fully executed\")",
+							"            pm.test(\"Actual Quantiy : \" + jsonData.data.orderDetail.size);",
+							"            pm.test(\"Open Quantiy : \" + jsonData.data.orderDetail.executedQty)",
+							"        }",
+							"        else {",
+							"            pm.test(\"Order is partially executed or cancelled\")",
+							"            pm.test(\"Actual Quantiy : \" + jsonData.data.orderDetail.size);",
+							"            pm.test(\"Open Quantiy : \" + jsonData.data.orderDetail.openQty)",
+							"        }",
+							"   }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "{{client_id_buy}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token_buy}}"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders/{{bid_id}}/fills",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						"{{bid_id}}",
+						"fills"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BID : Place Buy Market Order",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//   const postRequest = {",
+							"//   url: pm.environment.get(\"baseUrl\")+'/market/'+pm.environment.get(\"pair\")+'/book?group=singapore&converted=1',",
+							"//   method: 'GET',",
+							"//   header: {",
+							"//     'Content-Type': 'application/json',",
+							"//     //'Authorization':'Bearer '+pm.environment.get(\"access_token\")",
+							"//   },",
+							"//   body: {",
+							"//   }",
+							"// };",
+							"// pm.sendRequest(postRequest, (error, response) => {",
+							"//   //console.log(error ? error : response.json());",
+							"//    var jsonData = response.json();",
+							"//  // console.log(jsonData.asks[0]);",
+							"  ",
+							"//     var bid_price = jsonData.asks[0].price;",
+							"//     var bid_qty = jsonData.asks[0].amount;",
+							"//     var final_bid_price= (bid_price * bid_qty) + 5",
+							"",
+							"//     if(final_bid_price >= pm.environment.get(\"Min_range\") && final_bid_price <= pm.environment.get(\"Max_range\"))",
+							"//     {",
+							"//     pm.environment.set(\"bid_price\",jsonData.asks[0].price);",
+							"//     pm.environment.set(\"final_bid_price\",final_bid_price);",
+							"//     }",
+							"// });",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"if (jsonData.statusCode === 200) {",
+							"",
+							"    if (jsonData.statusDescription === \"Success\" && jsonData.data.status === \"canceled\") {",
+							"        pm.environment.set(\"bid_id\", jsonData.data.id);",
+							"        pm.test(\"There are no sell order present due to which Order has been canceled\")",
+							"    }",
+							"    else {",
+							"        pm.response.to.have.status(200);",
+							"",
+							"        pm.test(\"Buy Order ID :\" + pm.environment.get(\"bid_id\"))",
+							"        pm.test(\"Price : \" + pm.environment.get(\"final_bid_price\"));",
+							"        pm.test(\"Quantity Entered : \" + pm.environment.get(\"bid_price\"));",
+							"",
+							"        if (jsonData.data.status === \"complete\") {",
+							"            pm.test(\"Order has been executed..\")",
+							"        }",
+							"        else if (jsonData.data.status === \"pending\") {",
+							"            pm.test(\"order is in pending state\")",
+							"        }",
+							"    }",
+							"",
+							"",
+							"}",
+							"else if (jsonData.statusDescription === \"Order Rejected. Order could have resulted in self trade.\") {",
+							"    pm.test(\"Order Rejected. Order could have resulted in self trade.\");",
+							"}",
+							"else if (jsonData.statusDescription === \"Not enough funds. Errors: Not enough funds.\") {",
+							"    pm.test(\"Not enough funds. Errors: Not enough funds.\")",
+							"}",
+							"else if (jsonData.statusDescription === \"Market orders are not available now.\") {",
+							"    pm.test(\"Market orders are not available now.\")",
+							"}",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "{{client_id}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token_buy}}"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"trade_pair\": \"{{pair}}\",\n    \"side\": \"Bid\",\n    \"marketOrderValue\": \"1\",\n    \"tradeType\": 2\n}\n\n\n\n"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders/trade",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						"trade"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BID : Order fills for Market Order",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"//pm.globals.set(\"order_id\", jsonData.data.id);",
+							"",
+							"console.log(jsonData.statusDescription);",
+							"",
+							"if((pm.environment.get(\"bid_id\")) === jsonData.data.orderDetail.id)",
+							"//if(5098122 === jsonData.data.orderDetail.id)",
+							"{",
+							"    if(jsonData.data.orderDetail.status === \"canceled\")",
+							"    {",
+							"          pm.test(\"There are no sell order present due to which Order has been canceled\")",
+							"    }",
+							"    else if(jsonData.data.orderDetail.size === jsonData.data.orderDetail.openQty)",
+							"    {",
+							"        pm.test(\"Order is fully in open state i.e. all quantity are in pending state\")",
+							"        pm.test(\"Actual Quantiy : \"+jsonData.data.orderDetail.size);",
+							"        pm.test(\"Open Quantiy : \"+jsonData.data.orderDetail.openQty)",
+							"    }",
+							"    else if(jsonData.data.orderDetail.size != jsonData.data.orderDetail.openQty)",
+							"    {",
+							"        if (jsonData.data.orderDetail.size === jsonData.data.orderDetail.executedQty) {",
+							"            pm.test(\"Order is fully executed\")",
+							"            pm.test(\"Actual Quantiy : \" + jsonData.data.orderDetail.size);",
+							"            pm.test(\"Open Quantiy : \" + jsonData.data.orderDetail.executedQty)",
+							"        }",
+							"        else {",
+							"            pm.test(\"Order is partially executed or cancelled\")",
+							"            pm.test(\"Actual Quantiy : \" + jsonData.data.orderDetail.size);",
+							"            pm.test(\"Open Quantiy : \" + jsonData.data.orderDetail.openQty)",
+							"        }",
+							"   }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "{{client_id_buy}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token_buy}}"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders/{{bid_id}}/fills",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						"{{bid_id}}",
+						"fills"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Q - Pending order",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_buy}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://sandbox.zebpay.co/frontoffice/proxy/api/orders?Page=1&Limit=500",
+					"protocol": "https",
+					"host": [
+						"sandbox",
+						"zebpay",
+						"co"
+					],
+					"path": [
+						"frontoffice",
+						"proxy",
+						"api",
+						"orders"
+					],
+					"query": [
+						{
+							"key": "Page",
+							"value": "1"
+						},
+						{
+							"key": "Limit",
+							"value": "500"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Range for Partial Order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"if(jsonData.statusCode ===77){",
+							"",
+							"    pm.test(\"Get Range\", function () {",
+							"        pm.response.to.have.status(200);",
+							"",
+							"        //get the string i.e. \"Rate should be in the range of 10.000000 - 100.000000\",",
+							"        var str = jsonData.statusDescription;",
+							"            ",
+							"        //get the range i.e. 10.000000 - 100.000000",
+							"        var range = str.substring(str.lastIndexOf(\"f\") + 2);",
+							"        ",
+							"        //get the max range after hyphen i.e. 100.000000 ",
+							"        var split = range.split(\"-\");",
+							"        ",
+							"        var min_range =    split[0].replace(/,/g, '');",
+							"      //  console.log(min_range);",
+							"        //remove comma from range if it is present",
+							"        pm.environment.set(\"Min_range\",split[0].replace(/,/g, ''));",
+							"        pm.environment.set(\"Max_range\",split[1].replace(/,/g, ''));",
+							"",
+							"        var min = pm.environment.get(\"Min_range\");",
+							"        var max = pm.environment.get(\"Max_range\");",
+							"",
+							"        pm.environment.set(\"final_bid_price\", _.random(min,max));",
+							"    //    pm.environment.set(\"bid_price\", _.random(0.01,200).toFixed(4))",
+							"        pm.environment.set(\"bid_price\", _.random(0.004,0.0050).toFixed(4))",
+							"       ",
+							"    });",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "{{client_id_sell}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token_sell}}"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"trade_pair\": \"{{pair}}\",\n    \"side\": \"Bid\",\n    \"size\": 0.1,\n    \"price\": 0.1,\n    \"tradeType\": 1\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ASK : Place Partial Sell Order",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//   const postRequest = {",
+							"//   url: pm.environment.get(\"baseUrl\")+'/market/'+pm.environment.get(\"pair\")+'/book?group=singapore&converted=1',",
+							"//   method: 'GET',",
+							"//   header: {",
+							"//     'Content-Type': 'application/json',",
+							"//     //'Authorization':'Bearer '+pm.environment.get(\"access_token\")",
+							"//   },",
+							"//   body: {",
+							"//   }",
+							"// };",
+							"// pm.sendRequest(postRequest, (error, response) => {",
+							"//   //console.log(error ? error : response.json());",
+							"//    var jsonData = response.json();",
+							"//   console.log(jsonData.bids[0]);",
+							"//     pm.environment.set(\"bid_price\",jsonData.bids[0].price * 100);",
+							"//   //  pm.environment.set(\"ask_qty\",jsonData.asks[0].amount  + 10 );",
+							"//     pm.environment.set(\"bid_qty\",10 )",
+							"//    // var p_ask_qty = pm.environment.get(\"ask_qty\") + 100;",
+							"//    // pm.environment.set(\"pending order : \", +p_ask_qty);",
+							"",
+							"// });"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"if(jsonData.statusDescription == \"Success\" && jsonData.statusCode ===200){",
+							"",
+							"    pm.test(\"ASK : Successfully Order Placed\", function () {",
+							"        pm.response.to.have.status(200);",
+							"        pm.environment.set(\"askorder_id\", jsonData.data.id);",
+							"        pm.environment.set(\"ask_qty\",jsonData.data.size);",
+							"        pm.environment.set(\"ask_price\",jsonData.data.price);",
+							"        pm.test(\"Quantity Entered :\"+pm.environment.get(\"ask_qty\"));",
+							"        pm.test(\"Price : \"+pm.environment.get(\"ask_price\"));",
+							"",
+							"         if (jsonData.data.status === \"complete\") {",
+							"            pm.test(\"Order has been executed..\")",
+							"        }",
+							"        else if(jsonData.data.status === \"pending\") {",
+							"            pm.test(\"order is in pending state\")",
+							"        }",
+							"    });",
+							"}else{",
+							"    console.log(jsonData.statusDescription);",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "{{client_id}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token_sell}}"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"trade_pair\": \"{{pair}}\",\n     \"side\": \"ask\",\n     \"size\": \"{{bid_price}}\",\n     \"price\": \"{{final_bid_price}}\",\n    \"tradeType\": 1\n }\n\n\n"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BID : Place Partial Buy Order",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//   const postRequest = {",
+							"//   url: pm.environment.get(\"baseUrl\")+'/market/'+pm.environment.get(\"pair\")+'/book?group=singapore&converted=1',",
+							"//   method: 'GET',",
+							"//   header: {",
+							"//     'Content-Type': 'application/json',",
+							"//     //'Authorization':'Bearer '+pm.environment.get(\"access_token\")",
+							"//   },",
+							"//   body: {",
+							"//   }",
+							"// };",
+							"// pm.sendRequest(postRequest, (error, response) => {",
+							"//   //console.log(error ? error : response.json());",
+							"//    var jsonData = response.json();",
+							"//  // console.log(jsonData.asks[0]);",
+							"  ",
+							"//     var bid_price = jsonData.asks[0].price;",
+							"//     var bid_qty = jsonData.asks[0].amount;",
+							"//     var final_bid_price= (bid_price * bid_qty) + 5",
+							"",
+							"//     if(final_bid_price >= pm.environment.get(\"Min_range\") && final_bid_price <= pm.environment.get(\"Max_range\"))",
+							"//     {",
+							"//     pm.environment.set(\"bid_price\",jsonData.asks[0].price);",
+							"//     pm.environment.set(\"final_bid_price\",final_bid_price);",
+							"//     }",
+							"// });",
+							"pm.environment.set(\"partial_order\",(pm.environment.get(\"ask_qty\")+0.0005).toFixed(4))",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"if (jsonData.statusDescription === \"Success\" && jsonData.statusCode === 200) {",
+							"",
+							"    pm.test(\"BID : Partial Orde Executed\", function () {",
+							"        pm.response.to.have.status(200);",
+							"        pm.environment.set(\"bid_id\", jsonData.data.id);",
+							"        pm.test(\"Quantity Entered : \" + pm.environment.get(\"final_bid_price\"));",
+							"        pm.test(\"Price : \" + pm.environment.get(\"partial_order\"));",
+							"",
+							"        if (jsonData.data.status === \"complete\") {",
+							"            pm.test(\"Order has been executed..\")",
+							"        }",
+							"        else if(jsonData.data.status === \"pending\") {",
+							"            pm.test(\"order is in pending state\")",
+							"        }",
+							"    });",
+							"}",
+							"else if (jsonData.statusDescription === \"Order Rejected. Order could have resulted in self trade.\") {",
+							"    pm.test(\"Order Rejected. Order could have resulted in self trade.\");",
+							"}",
+							"else if (jsonData.statusDescription === \"Not enough funds. Errors: Not enough funds.\") {",
+							"    pm.test(\"Not enough funds. Errors: Not enough funds.\")",
+							"}",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "{{client_id_buy}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token_buy}}"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n     \"trade_pair\": \"{{pair}}\",\n     \"side\": \"Bid\",\n     \"size\": \"{{partial_order}}\",\n     \"price\": \"{{final_bid_price}}\",\n     \"tradeType\": 1\n }\n\n\n"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BID : check partial order fill",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"//pm.globals.set(\"order_id\", jsonData.data.id);",
+							"",
+							"console.log(jsonData.statusDescription);",
+							"",
+							"if((pm.environment.get(\"bid_id\")) === jsonData.data.orderDetail.id)",
+							"//if(5098122 === jsonData.data.orderDetail.id)",
+							"{",
+							"    if(jsonData.data.orderDetail.size === jsonData.data.orderDetail.openQty)",
+							"    {",
+							"        pm.test(\"Order is fully in open state i.e. all quantity are in pending state\")",
+							"        pm.test(\"Actual Quantiy : \"+jsonData.data.orderDetail.size);",
+							"        pm.test(\"Open Quantiy : \"+jsonData.data.orderDetail.openQty)",
+							"    }",
+							"    else if(jsonData.data.orderDetail.size != jsonData.data.orderDetail.openQty)",
+							"    {",
+							"        if (jsonData.data.orderDetail.size === jsonData.data.orderDetail.executedQty) {",
+							"            pm.test(\"Order is fully executed\")",
+							"            pm.test(\"Actual Quantiy : \" + jsonData.data.orderDetail.size);",
+							"            pm.test(\"Open Quantiy : \" + jsonData.data.orderDetail.executedQty)",
+							"        }",
+							"        else {",
+							"            pm.test(\"Order is partially executed or cancelled\")",
+							"            pm.test(\"Actual Quantiy : \" + jsonData.data.orderDetail.size);",
+							"            pm.test(\"Open Quantiy : \" + jsonData.data.orderDetail.openQty)",
+							"        }",
+							"   }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "{{client_id_buy}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token_buy}}"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders/{{bid_id}}/fills",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						"{{bid_id}}",
+						"fills"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BID : Get Pending Orders from User 2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//pm.environment.set(\"pair\", \"BUSD-USDT\");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"if (pm.response.to.have.status(200)) {",
+							"    if (jsonData.statusCode == \"3013\") {",
+							"        pm.test(\"BID : There are no pending order for :\" + pm.environment.get(\"pair\"));",
+							"        //   pm.environment.set(\"Order status \",jsonData.statusDescription);",
+							"        pm.environment.set(\"statusCode\", jsonData.statusCode)",
+							"    }",
+							"    else if (jsonData.statusDescription == \"No matching orders found\") {",
+							"        pm.test(\"No pending orders present : \",jsonData.statusDescription)",
+							"    }",
+							"    else {",
+							"        pm.test(\"BID : Found Pending order for :\" + pm.environment.get(\"pair\"));",
+							"     //   pm.test(\"Price : \" + pm.environment.get(\"bid_price\"));",
+							"      //  pm.test(\"Quantity Entered : \" + pm.environment.get(\"final_bid_price\"));",
+							"       // pm.test(\"filled_size : \" + jsonData.data[0].filled_size);",
+							"        pm.test(\"Pending Quantity : \" + jsonData.data[0].open_size);",
+							"",
+							"    }",
+							"",
+							"",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_buy}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/orders?trade_pair={{pair}}&status=pending&page=1&limit=1000",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders"
+					],
+					"query": [
+						{
+							"key": "trade_pair",
+							"value": "{{pair}}"
+						},
+						{
+							"key": "status",
+							"value": "pending"
+						},
+						{
+							"key": "orderid",
+							"value": "0",
+							"disabled": true
+						},
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "1000"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ASK : Order CancelAll from User 1 Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"if( pm.response.to.have.status(200)){",
+							"    if(jsonData.statusDescription == \"Success\")",
+							"    {",
+							"        pm.test(\"BID : Deleted pending order for : \"+pm.environment.get(\"pair\"));",
+							"    }",
+							"    else{",
+							"    pm.test(\"BID : Found Pending order for : \"+pm.environment.get(\"pair\"))",
+							"}",
+							"}",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//pm.environment.set(\"pair\", \"AXS-INR\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "{{client_id_sell}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token_sell}}"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders/CancelAll?trade_pair={{pair}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						"CancelAll"
+					],
+					"query": [
+						{
+							"key": "trade_pair",
+							"value": "{{pair}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BID Trade : Order CancelAll from User 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"if( pm.response.to.have.status(200)){",
+							"    if(jsonData.statusDescription == \"Success\")",
+							"    {",
+							"        pm.test(\"BID : Deleted pending order for : \"+pm.environment.get(\"pair\"));",
+							"    }",
+							"    else{",
+							"    pm.test(\"BID : Found Pending order for : \"+pm.environment.get(\"pair\"))",
+							"}",
+							"}",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//pm.environment.set(\"pair\", \"AXS-INR\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "client_id",
+						"value": "{{client_id_buy}}"
+					},
+					{
+						"key": "timestamp",
+						"value": "{{timestamp}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token_buy}}"
+					},
+					{
+						"key": "RequestId",
+						"value": "{{$guid}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders/CancelAll?trade_pair={{pair}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						"CancelAll"
+					],
+					"query": [
+						{
+							"key": "trade_pair",
+							"value": "{{pair}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.globals.set(\"timestamp\", new Date().getTime());"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "country_code",
+			"value": "mt"
+		},
+		{
+			"key": "mobilenumber",
+			"value": "9765432"
+		},
+		{
+			"key": "pin",
+			"value": "1112"
+		},
+		{
+			"key": "client_id",
+			"value": "878075ac-9daf-4da5-8af8-96c8153386d9"
+		},
+		{
+			"key": "client_secret",
+			"value": "02533b05-fb24-4ef0-87b2-c6a4e6b64191"
+		},
+		{
+			"key": "APISecretKey",
+			"value": "313f30af-d678-4281-9a88-d49a6d387ebc"
+		},
+		{
+			"key": "SubscriptionKey",
+			"value": "e6c8a7092f6b4a8e9dc3c7544827715f"
+		},
+		{
+			"key": "AllowedScopes",
+			"value": "openid profile wallet:transactions:read trade:read trade:create wallet:address:read wallet:transactions:send payment:get:data"
+		},
+		{
+			"key": "baseUrl",
+			"value": "https://www.zebpay.co/api/v1"
+		},
+		{
+			"key": "daily_trade_limit",
+			"value": "500000"
+		},
+		{
+			"key": "daily_withdraw_limit",
+			"value": "500000"
+		},
+		{
+			"key": "total_trade_limit",
+			"value": "5000000"
+		},
+		{
+			"key": "total_withdraw_limit",
+			"value": "5000000"
+		}
+	]
+}
